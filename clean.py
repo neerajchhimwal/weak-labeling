@@ -4,6 +4,8 @@ import emoji
 from collections import Counter
 from tqdm import tqdm
 import re
+import config 
+
 def rating_to_sentiment():
     pass
 
@@ -38,23 +40,14 @@ def clean(csv_file, out_csv_file, out_dict):
         df = df.dropna(subset = ["title"])
         print('Dataframe Shape: ', df.shape)
 
-    if df.content.isnull().sum() != 0:
-        print('Removing lines with empty content field. Count = ', df.content.isnull().sum())
-        df = df.dropna(subset = ["content"])
-        df.reset_index(drop=True, inplace=True) 
-        print('Dataframe Shape: ', df.shape)
-
     print("Expanding contractions...")
     df['clean_title'] = [contractions.fix(text) for text in tqdm(df['title'])]
-    df['clean_content'] = [contractions.fix(text) for text in tqdm(df['content'])]
 
     print("Removing emojis and punc...")
     df['clean_title'] = df['clean_title'].apply(remove_emojis_and_punc)
-    df['clean_content'] = df['clean_content'].apply(remove_emojis_and_punc)
 
     # these are titles where only an emoji was present and hence are now emplty after cleaning
     indices_to_remove = [index for index, i in enumerate(df.clean_title) if not i]
-    indices_to_remove.extend([index for index, i in enumerate(df.clean_content) if not i])
 
     print('Removing lines with foreign chars...')
     pattern = f"[^ A-Za-z0-9]+"
@@ -63,11 +56,7 @@ def clean(csv_file, out_csv_file, out_dict):
             # print(line)
             indices_to_remove.append(i)
 
-    """ Removing lines with foreign chars in content may lead to many lines being removed"""
-    for i, line in enumerate(tqdm(df['clean_content'])):
-        if re.search(pattern, line):
-            # print(line)
-            indices_to_remove.append(i)
+    # Removing lines with foreign chars in content may lead to many lines being removed
 
     indices_to_remove = list(set(indices_to_remove))
     print('Num of indices with chars in language other than En: ', len(indices_to_remove))
@@ -91,7 +80,8 @@ def clean(csv_file, out_csv_file, out_dict):
 
 
 if __name__ == "__main__":
-    amzn_reviews_file = '../data/df_valid_with_preds.csv'
-    out_csv = amzn_reviews_file.replace('.csv', '_clean_content.csv')
-    out_dict = out_csv.replace('.csv', '.txt')
-    clean(csv_file = amzn_reviews_file, out_csv_file = out_csv, out_dict = out_dict)
+    # amzn_reviews_file = ''
+    # out_csv = amzn_reviews_file.replace('.csv', '_clean.csv')
+    # out_dict = out_csv.replace('.csv', '.txt')
+
+    clean(csv_file=config.amazon_review_csv_path, out_csv_file=config.clean_csv_out_path, out_dict=config.title_char_dict_clean)

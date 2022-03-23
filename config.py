@@ -10,3 +10,10 @@ ABSTAIN = -1
 POSITIVE = sentiment_id_to_label_dict['POSITIVE']
 NEGATIVE = sentiment_id_to_label_dict['NEGATIVE']
 NEUTRAL = sentiment_id_to_label_dict['NEUTRAL']
+
+'''
+Cleaning params
+'''
+amazon_review_csv_path = './data/raw/boat_bassheads_25k.csv'
+clean_csv_out_path = './data/clean/boat_bassheads_25k_clean.csv'
+title_char_dict_clean = './data/clean/boat_bassheads_25k_clean_dict.txt'
