@@ -6,8 +6,12 @@ from textblob import TextBlob
 from transformers import pipeline
 
 import json
+import re
 from config import ABSTAIN, POSITIVE, NEGATIVE, NEUTRAL
 
+'''
+Lableing functions expect df to have a field called "clean_title"
+'''
 
 classifier_bert = pipeline(model="nlptown/bert-base-multilingual-uncased-sentiment")
 
@@ -21,18 +25,15 @@ def textblob_polarity(x):
     x.polarity = scores.polarity
     return x
 
-
 # Label high polarity as positive.
 @labeling_function(pre=[textblob_polarity])
 def polarity_positive(x):
     return POSITIVE if x.polarity > 0.3 else ABSTAIN
 
-
 # Label low polarity as negative.
 @labeling_function(pre=[textblob_polarity])
 def polarity_negative(x):
     return NEGATIVE if x.polarity < -0.25 else ABSTAIN
-
 
 @labeling_function(pre=[textblob_polarity])
 def polarity_neutral(x):
@@ -47,14 +48,12 @@ def keyword_lookup(x, keywords, label):
         return label
     return ABSTAIN
 
-
 def make_keyword_lf(keywords, label):
     return LabelingFunction(
         name=f"keyword_{keywords[0]}",
         f=keyword_lookup,
         resources=dict(keywords=keywords, label=label),
     )
-
 
 # negative
 keyword_stopped = make_keyword_lf(keywords=["stopped", "working"], label=NEGATIVE)
@@ -92,7 +91,6 @@ def bert_sentiment(x):
 @labeling_function(pre=[bert_sentiment])
 def sentiment_positive(x):
     return POSITIVE if x.label >= 4 and x.confidence > 0.6 else ABSTAIN
-
 
 # negative.
 @labeling_function(pre=[bert_sentiment])
