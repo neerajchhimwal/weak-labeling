@@ -72,6 +72,10 @@ def regex_good_quality(x):
     return POSITIVE if re.search(r"good.*quality", x.clean_title, flags=re.I) else ABSTAIN
 
 @labeling_function()
+def regex_sound_quality(x):
+    return POSITIVE if re.search(r"good.*sound.*quality", x.clean_title, flags=re.I) or re.search(r"best.*sound.*", x.clean_title, flags=re.I) or re.search(r"amazing.*sound", x.clean_title, flags=re.I) else ABSTAIN
+
+@labeling_function()
 def regex_value_for_money(x):
     return POSITIVE if re.search(r"value.*money", x.clean_title, flags=re.I) else ABSTAIN
 

@@ -10,7 +10,7 @@ from snorkel.labeling import filter_unlabeled_dataframe
 
 def train_labeling_functions_and_predict(df_train, df_valid):
     final_lfs = [polarity_positive, polarity_negative, polarity_neutral,
-            keyword_stopped, keyword_worst, regex_stop, keyword_ok, regex_good_quality, regex_value_for_money,
+            keyword_stopped, keyword_worst, regex_stop, keyword_ok, regex_good_quality, regex_sound_quality, regex_value_for_money,
             sentiment_positive, sentiment_negative, sentiment_neutral_3_star, sentiment_neutral_from_positive]
 
     applier = PandasLFApplier(final_lfs)
